@@ -12,6 +12,7 @@ export function App() {
   const { data: employees, ...employeeUtils } = useEmployees()
   const { data: paginatedTransactions, ...paginatedTransactionsUtils } = usePaginatedTransactions()
   const { data: transactionsByEmployee, ...transactionsByEmployeeUtils } = useTransactionsByEmployee()
+  const [currentEmployee, setCurrentEmployee] = useState(EMPTY_EMPLOYEE)
   const [employeesLoading, setEmployeesLoading] = useState(false)
 
   const transactions = useMemo(
@@ -19,15 +20,19 @@ export function App() {
     [paginatedTransactions, transactionsByEmployee]
   )
 
-  const loadAllTransactions = useCallback(async () => {
+  const loadAllTransactions = useCallback(() => {
     transactionsByEmployeeUtils.invalidateData()
 
-    paginatedTransactionsUtils.fetchAll()
-
-    if (employees === null) {
-      setEmployeesLoading(true)
-      employeeUtils.fetchAll().then(() => setEmployeesLoading(false))
-    }
+    return Promise.all([
+      paginatedTransactionsUtils.fetchAll(),
+      (async () => {
+        if (employees === null) {
+          setEmployeesLoading(true)
+          await employeeUtils.fetchAll()
+          setEmployeesLoading(false)
+        }
+      })(),
+    ])
   }, [employees, employeeUtils, paginatedTransactionsUtils, transactionsByEmployeeUtils])
 
   const loadTransactionsByEmployee = useCallback(
@@ -56,7 +61,7 @@ export function App() {
 
         <InputSelect<Employee>
           isLoading={employeesLoading}
-          defaultValue={EMPTY_EMPLOYEE}
+          defaultValue={currentEmployee}
           items={employees === null ? [] : [EMPTY_EMPLOYEE, ...employees]}
           label="Filter by employee"
           loadingLabel="Loading employees"
@@ -68,6 +73,7 @@ export function App() {
             if (newValue === null) {
               return
             }
+            setCurrentEmployee(newValue)
 
             await loadTransactionsByEmployee(newValue.id)
           }}
@@ -81,10 +87,11 @@ export function App() {
           {transactions !== null && (
             <button
               className="RampButton"
-              disabled={paginatedTransactionsUtils.loading || paginatedTransactions?.nextPage === null}
+              disabled={paginatedTransactionsUtils.loading}
               onClick={async () => {
                 await loadAllTransactions()
               }}
+              style={{ display: currentEmployee !== EMPTY_EMPLOYEE ? "none" : "" }}
             >
               View More
             </button>
