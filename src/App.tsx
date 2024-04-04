@@ -91,7 +91,12 @@ export function App() {
               onClick={async () => {
                 await loadAllTransactions()
               }}
-              style={{ display: currentEmployee !== EMPTY_EMPLOYEE ? "none" : "" }}
+              style={{
+                display:
+                  currentEmployee !== EMPTY_EMPLOYEE || paginatedTransactions?.nextPage === null
+                    ? "none"
+                    : "",
+              }}
             >
               View More
             </button>
