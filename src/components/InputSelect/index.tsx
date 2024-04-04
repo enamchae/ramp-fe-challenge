@@ -73,15 +73,15 @@ export function InputSelect<TItem>({
               }}
             >
               {inputValue}
+            </div>
 
-              <div
-                className={classNames("RampInputSelect--dropdown-container", {
-                  "RampInputSelect--dropdown-container-opened": isOpen,
-                })}
-                {...getMenuProps()}
-              >
-                {renderItems()}
-              </div>
+            <div
+              className={classNames("RampInputSelect--dropdown-container", {
+                "RampInputSelect--dropdown-container-opened": isOpen,
+              })}
+              {...getMenuProps()}
+            >
+              {renderItems()}
             </div>
           </div>
         )
