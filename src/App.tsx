@@ -21,6 +21,9 @@ export function App() {
   )
 
   const loadAllTransactions = useCallback(() => {
+    paginatedTransactionsUtils.abort()
+    transactionsByEmployeeUtils.abort()
+
     transactionsByEmployeeUtils.invalidateData()
 
     return Promise.all([
@@ -40,6 +43,9 @@ export function App() {
       if (employeeId === EMPTY_EMPLOYEE.id) {
         return await loadAllTransactions()
       }
+      paginatedTransactionsUtils.abort()
+      transactionsByEmployeeUtils.abort()
+
       transactionsByEmployeeUtils.invalidateData()
       paginatedTransactionsUtils.invalidateData()
       await transactionsByEmployeeUtils.fetchById(employeeId)
