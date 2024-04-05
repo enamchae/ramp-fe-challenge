@@ -22,6 +22,7 @@ export function App() {
 
   const loadAllTransactions = useCallback(() => {
     transactionsByEmployeeUtils.invalidateData()
+    paginatedTransactionsUtils.invalidateData()
 
     return Promise.all([
       paginatedTransactionsUtils.fetchAll(),
@@ -40,6 +41,7 @@ export function App() {
       if (employeeId === EMPTY_EMPLOYEE.id) {
         return await loadAllTransactions()
       }
+      transactionsByEmployeeUtils.invalidateData()
       paginatedTransactionsUtils.invalidateData()
       await transactionsByEmployeeUtils.fetchById(employeeId)
     },
@@ -74,7 +76,6 @@ export function App() {
               return
             }
             setCurrentEmployee(newValue)
-
             await loadTransactionsByEmployee(newValue.id)
           }}
         />
