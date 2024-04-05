@@ -22,7 +22,6 @@ export function App() {
 
   const loadAllTransactions = useCallback(() => {
     transactionsByEmployeeUtils.invalidateData()
-    paginatedTransactionsUtils.invalidateData()
 
     return Promise.all([
       paginatedTransactionsUtils.fetchAll(),
